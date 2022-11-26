@@ -35,4 +35,8 @@ const userSchema = new Schema(
             getters: true
         }
     }
-)
+);
+
+userSchema.virtual('friendCount').get(function () {
+    return this.friends.length;
+});
