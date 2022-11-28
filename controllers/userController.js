@@ -13,6 +13,7 @@ const {ObjectId} = require('mongoose').Types;
 const{User, Thought} = require("../models");
 
 module.exports = {
+    //get all users
     getUsers(req, res) {
         User.find()
         .then(async (users) => {
@@ -26,6 +27,11 @@ module.exports = {
             console.log(err);
             return res.status(500).json(err);
         });
+    },
+    //get a single user
+
+    getSingleUser(req, res) {
+        User.findOne({_id: req.params.user_id})
     }
 }
 
