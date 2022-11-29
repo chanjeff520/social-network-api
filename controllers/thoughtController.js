@@ -102,13 +102,13 @@ module.exports = {
     addReaction(req, res) {
         Thought.findOneAndUpdate(
             {_id: req.params.thought_id},
-            {$addToSet: {friends: req.params.friend_id}},
+            {$addToSet: {reactions : req.body}},
             {runValidators: true, new:true}
         )
-        .then((user) => {
-            !user
-            ? res.status(404).json({message: 'No user found with that ID'})
-            : res.json(user);
+        .then((thought) => {
+            !thought
+            ? res.status(404).json({message: 'No thought found with that ID'})
+            : res.json(thought);
         })
         .catch((err) => {
             res.status(500).json(err);
@@ -117,15 +117,15 @@ module.exports = {
 
     //remove a specific friend from a specific user
     removeFriend(req, res) {
-        User.findOneAndUpdate(
-            {_id: req.params.user_id},
-            {$pull: {friend: {friend_id: req.params.friend_id}}},
+        Thought.findOneAndUpdate(
+            {_id: req.params.thought_id},
+            {$pull: {thought: {reaction_id: req.params.reaction_id}}},
             {runValidators: true, new: true}
         )
-        .then((user) => {
-            !user
-            ? res.status(404).json({message: 'No user found with that ID'})
-            : res.json(user);
+        .then((thought) => {
+            !thought
+            ? res.status(404).json({message: 'No thought found with that ID'})
+            : res.json(thought);
         })
         .catch((err) => res.status(500).json(err));
     }
