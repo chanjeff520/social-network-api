@@ -13,15 +13,15 @@ const {ObjectId} = require('mongoose').Types;
 const{User, Thought} = require("../models");
 
 module.exports = {
-    //get all users
+    //get all thoughts and their reactions
     getThoughts(req, res) {
         Thought.find()
         .then(async (thoughts) => {
-            const userObj = {
+            const thoughtObj = {
                 thoughts,
-                friend_count: await User.friendCount
+                reaction_count: await thoughts.reactionCount
             }
-            return res.json(userObj);
+            return res.json(thoughtObj);
         })
         .catch((err) => {
             console.log(err);
@@ -29,7 +29,7 @@ module.exports = {
         });
     },
 
-    //get a single user
+    //get a single thought
     getSingleThought(req, res) {
         Thought.findOne({_id: req.params.thought_id})
         .select('-__v')
@@ -38,7 +38,7 @@ module.exports = {
             ? res.status(404).json({message: 'No thought found with that ID'})
             : res.json({
                 thought,
-                reaction_count: await User.reactionCount
+                reaction_count: await Thought.reactionCount
             });
         })
         .catch((err) => {
@@ -47,7 +47,7 @@ module.exports = {
         });
     },
 
-    //create a new User
+    //create a new thought
     createThought(req, res){
         Thought.create(req.body)
         .then((thought) => res.json(thought))
@@ -56,7 +56,7 @@ module.exports = {
         });
     },
 
-    //updating a User
+    //updating a thought
     updateThought(req, res){
         Thought.findOneAndUpdate(
             {_id: req.params.thought_id},
@@ -73,7 +73,7 @@ module.exports = {
         });
     },
 
-    //delete a User
+    //delete a thought
     deleteThought(req,res) {
         Thought.findOneAndDelete({_id: req.params.thought_id})
         .then((thought) => {
@@ -96,9 +96,9 @@ module.exports = {
     },
 
 
-    /* ----------- Friend Routes Functions ------------- */
+    /* ----------- Reaction Routes Functions ------------- */
 
-    // to add a new friend to a specific user
+    // to add a new reaction to a specific thought
     addReaction(req, res) {
         Thought.findOneAndUpdate(
             {_id: req.params.thought_id},
@@ -115,8 +115,8 @@ module.exports = {
         });
     },
 
-    //remove a specific friend from a specific user
-    removeFriend(req, res) {
+    //remove a specific reaction from a specific thought
+    removeReaction(req, res) {
         Thought.findOneAndUpdate(
             {_id: req.params.thought_id},
             {$pull: {thought: {reaction_id: req.params.reaction_id}}},
